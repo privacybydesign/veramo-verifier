@@ -7,4 +7,6 @@ RUN yarn install
 
 COPY . .
 
-CMD ["yarn", "start"]
+RUN apk add --no-cache postgresql-client
+
+CMD ["sh", "-c", "PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p ${DB_PORT:-5432} -U $DB_USER -d $DB_NAME -c 'CREATE SCHEMA IF NOT EXISTS verifier' && exec yarn start"]
