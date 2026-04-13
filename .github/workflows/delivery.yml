@@ -31,6 +31,7 @@ jobs:
           tags: |
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
             type=match,pattern=v(.*),group=1,value=${{ github.event.inputs.tag }},enable=${{ github.event.inputs.tag != '' }}
+            type=match,pattern=pbdf-v(.*),group=1,value=${{ github.event.inputs.tag }},enable=${{ github.event.inputs.tag != '' }}
             type=ref,event=branch,enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag == '' }}
 
       - name: Set up Docker Buildx
