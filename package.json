@@ -71,7 +71,7 @@
     "typeorm": "^0.3.28",
     "typescript": "^5.8.3",
     "uint8arrays": "^5.1.0",
-    "uuid": "^10.0.0",
+    "uuid": "^14.0.0",
     "zlib": "^1.0.5"
   },
   "resolutions": {
