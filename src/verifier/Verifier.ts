@@ -16,8 +16,13 @@ export interface VerifierOptions {
     adminToken:string;
     path:string;
     presentations:string[];
+    // OpenID4VP Client Identifier Prefix used for this verifier (e.g. 'decentralized_identifier').
+    // Defaults to 'decentralized_identifier', which is today's behaviour.
+    clientIdPrefix?:string;
     metadata?: any;
 }
+
+export const DEFAULT_CLIENT_ID_PREFIX = 'decentralized_identifier';
 
 export class Verifier {
     public name:string;
@@ -30,6 +35,7 @@ export class Verifier {
     public eventEmitter:EventEmitter;
     public sessionManager:SessionStateManager;
     public presentations:string[];
+    public clientIdPrefix:string;
     public sessions:Map<string,RP>;
     public statusList:StatusList;
     public metadata?:any;
@@ -44,6 +50,7 @@ export class Verifier {
         this.sessionManager = new SessionStateManager(this.name);
         this.sessions = new Map();
         this.presentations = opts.presentations;
+        this.clientIdPrefix = opts.clientIdPrefix ?? DEFAULT_CLIENT_ID_PREFIX;
         this.statusList = new StatusList();
         this.metadata = opts.metadata;
     }
@@ -66,7 +73,18 @@ export class Verifier {
     public clientId()
     {
         // https://openid.net/specs/openid-connect-self-issued-v2-1_0-13.html#section-7.2.3
-        return this.identifier!.did; // workaround for UniMe, which only supports the client_id_scheme 'did'
+        // The client identifier value is the verifier's DID. The OpenID4VP Client Identifier
+        // Prefix that goes in front of it (e.g. 'decentralized_identifier') is configurable per
+        // verifier via `clientIdPrefix` (see clientIdWithPrefix()); it defaults to
+        // 'decentralized_identifier', the value UniMe expects.
+        return this.identifier!.did;
+    }
+
+    public clientIdWithPrefix()
+    {
+        // https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-5.9.3
+        // Combine the configured Client Identifier Prefix with the client identifier value.
+        return this.clientIdPrefix + ':' + this.clientId();
     }
 
     public basePath()

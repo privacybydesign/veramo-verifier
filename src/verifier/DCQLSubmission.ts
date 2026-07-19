@@ -297,7 +297,7 @@ export class DCQLSubmission
         }
         // check that nonce and aud are correct
         // https://openid.net/specs/openid-4-verifiable-presentations-1_0-28.html#appendix-B.3.6
-        if (!jwt.payload?.aud || (jwt.payload.aud != this.rp.verifier.clientId() && jwt.payload.aud != 'decentralized_identifier:' + this.rp.verifier.clientId())) {
+        if (!jwt.payload?.aud || (jwt.payload.aud != this.rp.verifier.clientId() && jwt.payload.aud != this.rp.verifier.clientIdWithPrefix())) {
             this.messages.push({code: 'INVALID_KB', message: this.credentialId + ': aud claim does not match client id of verifier'});
         }
         if (!jwt.payload?.nonce || jwt.payload.nonce != this.rp.session.data.nonce) {
