@@ -12,6 +12,7 @@ import { createRoutesForVerifier } from './createRoutesForVerifier';
 import { createRoutesForAdmin } from './admin/createRoutesForAdmin';
 import { getDIDConfigurationStore } from 'dids/Store';
 import { getDidWebSpec } from './endpoints/getDidSpec';
+import { serveStaticRootDidDocument } from './endpoints/getStaticDidDocument';
 
 const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 5000
 const LISTEN_ADDRESS = process.env.LISTEN_ADDRESS ?? '0.0.0.0'
@@ -39,6 +40,11 @@ export async function initialiseServer() {
 
     const rootRouter = express.Router();
     app.use('/', rootRouter);
+
+    // Serve a statically-provisioned DID document at /.well-known/did.json for
+    // did:web keys that resolve against the bare deployment host.
+    serveStaticRootDidDocument(rootRouter);
+
     const didStore = getDIDConfigurationStore();
     const dids = await didStore.keysWithPath();
     for (const did of dids) {
