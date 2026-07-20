@@ -4,11 +4,14 @@ const debug = Debug('issuer:did');
  * Instantiate context configurations
  */
 
+import fs from "fs";
+import { isAbsolute, resolve } from "path";
 import { loadJsonFiles } from "utils/loadJsonFiles";
 import { Identifier, Key, PrivateKey } from "database/entities/index";
 import { CryptoKey, Factory } from '@muisit/cryptokey';
 import { getDbConnection } from 'database/index';
 import { resolveConfPath } from 'utils/resolveConfPath';
+import { createKeyFromPem } from 'dids/importKey';
 
 export interface DIDStoreValue {
     identifier: Identifier;
@@ -24,6 +27,10 @@ export interface DIDConfiguration {
     service?:any;
     type: string;
     provider: string;
+    // Optional path to a PEM-encoded private key to import instead of
+    // generating a fresh one. Resolved relative to the dids config directory
+    // when not absolute. Keeps a did:web identity stable across redeploys.
+    privateKeyFile?:string;
     identifier: Identifier;
     key:CryptoKey;
 }
@@ -89,8 +96,18 @@ class DIDConfigurationStore {
     private async initialiseKey(configuration:DIDConfiguration): Promise<DIDStoreValue>
     {
         const kType = configuration.type || 'Secp256r1';
-        const ckey = await Factory.createFromType(kType);
-        await ckey.createPrivateKey();
+        let ckey:CryptoKey;
+        if (configuration.privateKeyFile) {
+            const pemPath = isAbsolute(configuration.privateKeyFile)
+                ? configuration.privateKeyFile
+                : resolve(resolveConfPath('dids'), configuration.privateKeyFile);
+            debug('Importing private key from PEM: ' + pemPath);
+            ckey = await createKeyFromPem(kType, fs.readFileSync(pemPath, 'utf8'));
+        }
+        else {
+            ckey = await Factory.createFromType(kType);
+            await ckey.createPrivateKey();
+        }
 
         const identifier = new Identifier();
         switch (configuration.provider) {
