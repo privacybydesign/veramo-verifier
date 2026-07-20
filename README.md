@@ -135,7 +135,9 @@ Example:
 }
 ```
 
-This example defines a verifier endpoint for the `sportscentre`. The `adminToken` is used for front-end interaction. The verifier refers to a previously configured `did` using the `did` attribute, which contains an alias. 
+This example defines a verifier endpoint for the `sportscentre`. The `adminToken` is used for front-end interaction. The verifier refers to a previously configured `did` using the `did` attribute, which contains an alias.
+
+The optional `clientIdPrefix` attribute sets the [OpenID4VP Client Identifier Prefix](https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-5.9.3) placed in front of the verifier's client identifier (for example in the `client_id` request parameter). It defaults to `decentralized_identifier`, which is the value expected by wallets such as UniMe. Set it explicitly per verifier when a different prefix is required. 
 
 ## Interfaces
 
