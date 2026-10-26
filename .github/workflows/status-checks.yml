@@ -20,6 +20,8 @@ jobs:
       contents: read
     with:
       scripts: lint build # eslint, tsc (there is no test script)
+      # No effect yet: on Yarn 1 with a .yarnrc.yml, node-checks@v1 relies on
+      # YARN_ENABLE_SCRIPTS, which only Yarn 2+ reads.
       ignore-scripts: true
 
   # Builds and scans the image without pushing it; Delivery pushes from main.
