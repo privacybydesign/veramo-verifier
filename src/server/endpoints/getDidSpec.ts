@@ -8,7 +8,7 @@ import { Verifier } from 'verifier/Verifier';
 const debug = Debug('server:didspec');
 
 export function getDidSpec(verifier:Verifier) {
-    var path = '/.well-known/did.json';
+    let path = '/.well-known/did.json';
     const idparts = verifier.did.split(':');
     if (idparts.length > 3) {
         // the did contains a subpath.
