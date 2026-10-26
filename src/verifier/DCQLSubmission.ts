@@ -257,7 +257,6 @@ export class DCQLSubmission
         else if(claims.issuer.id) {
             ec.issuer = claims.issuer.id;
         }
-        let vc:any;
 
         switch (format) {
             case 'jwt_vc_json':
